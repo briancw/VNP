@@ -1,0 +1,15 @@
+version: '3.1'
+services:
+    db:
+        image: postgres:alpine
+        # image: mdillon/postgis
+        container_name: vnp
+        restart: always
+        environment:
+            POSTGRES_PASSWORD: vnp-password
+            POSTGRES_USER: vnp
+            POSTGRES_DB: vnp
+        ports:
+            - "5432:5432"
+        volumes:
+            - ./db_data:/var/lib/postgresql/data

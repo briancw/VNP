@@ -1,0 +1,35 @@
+96mb / 500000m
+96mb / 500km
+19.2mb / 100km
+0.192mb / 1km
+
+250gb ($25)
+
+GIS Version ---
+Before: 107,776,749 bytes
+After: 240,784,089 bytes
+
+1km^2: 133,007,340 bytes
+1km^2: 0.133 gb
+
+250,000,000,000 / 133,007,340 = 1,879.59 km
+250 / 0.133 = 1,879 km
+
+Custom File (JSON) --
+1km^2: 57,241,680 bytes
+1km^2: 0.05724 gb
+250 / 0.05724 = 4,367 km
+
+Custom File (CSV) --
+1km^2: 20,241,380 bytes
+250,000,000,000 / 20,241,380 = 12,350.93 km
+
+Brotli + Zstd (CSV) --
+1km^2: 2,667,079 bytes
+250,000,000,000 / 2,667,079 = 93,735 km
+
+Half size file: worse compression
+Larger Files:
+
+
+555,555,555,555 / (2,667,079) = 208,301

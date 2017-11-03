@@ -1,0 +1,22 @@
+{
+  "name": "von-neumann",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Brian Whicheloe",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "iltorb": "^2.0.2",
+    "jsonwebtoken": "^8.1.0",
+    "node-zstd": "^2.0.1",
+    "pg": "^7.3.0",
+    "sequelize": "^4.20.1",
+    "shortid": "^2.2.8"
+  }
+}
