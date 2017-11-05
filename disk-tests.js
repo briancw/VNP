@@ -3,6 +3,14 @@ const fs = require('fs')
 const brotli = require('iltorb')
 const zstd = require('node-zstd')
 const shortid = require('shortid')
+const jsbinary = require('js-binary')
+
+const schema = new jsbinary.Type([{
+    objectId: 'uint',
+    objectTypeId: 'uint',
+    x: 'uint',
+    z: 'uint',
+}])
 
 let sqkm = 1000
 
@@ -14,13 +22,16 @@ function genChunk(sqkm) {
     let i = 0
 
     let mapDataString = ''
+    let mapData = []
 
     while (z < sqkm) {
         x = 0
         while (x < sqkm) {
-            let objectId = shortid.generate()
+            // let objectId = shortid.generate()
+            let objectId = i
             let objectTypeId = (Math.round(Math.random() * 255))
             mapDataString += `${objectId},${objectTypeId},${x},${z}\n`
+            mapData[i] = {objectId, objectTypeId, x, z}
 
             i += 1
             x += 1
@@ -29,7 +40,9 @@ function genChunk(sqkm) {
     }
     console.log(`Put ${i} entities into memory`)
 
+    let encoded = schema.encode(mapData)
     fs.writeFileSync(`${sqkm}-mapData-csv.dat`, mapDataString)
+    fs.writeFileSync(`${sqkm}-mapData-binary.dat`, encoded)
 
     let buffer = Buffer.from(mapDataString, 'utf8')
 
@@ -56,11 +69,15 @@ function genChunk(sqkm) {
             console.log(`\n${sqkm} ----`)
             console.log(`Raw: ${rawSize / i}`)
             console.log(`Compressed: ${compressedSize / i}`)
+        })
+    })
 
-            // if (sqkm < 2000) {
-            //     sqkm += 10
-            //     genChunk(sqkm)
-            // }
+    brotli.compress(encoded, bopts, (err, output) => {
+        zstd.compress(output, zopts, (err, zoutput) => {
+            fs.writeFileSync(`${sqkm}-mapData-binary-brotli-zstd.dat`, zoutput)
+
+            let compressedSize = fs.statSync(`${sqkm}-mapData-binary-brotli-zstd.dat`).size
+            console.log(`Binary Compressed: ${compressedSize / i}`)
         })
     })
 }

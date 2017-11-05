@@ -33,3 +33,5 @@ Larger Files:
 
 
 555,555,555,555 / (2,667,079) = 208,301
+
+Sqlite is dead slow and compressed 1km2 came to 12.6MB

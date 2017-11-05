@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+
+        <style>
+            * {
+                margin: 0px;
+                padding: 0px;
+                box-sizing: border-box;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas" width="1000" height="1000"></canvas>
+    </body>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const terrain_canvas = document.getElementById('canvas')
+            const ctx = terrain_canvas.getContext('2d')
+            window.ctx = ctx
+
+            const tileWidth = 3
+
+            axios.get('http://localhost:3005/world-data')
+            .then(res => {
+                let mapData = res.data
+                let diameter = Math.sqrt(mapData.length)
+
+                let x = 0
+                let z = 0
+                let i = 0
+
+                console.log(mapData)
+                // console.log(mapData.length, diameter)
+
+                while (x < diameter) {
+                    while (z < diameter) {
+                        let height = mapData[i]
+                        // let val = Math.floor(((height + 1) / 2) * 255)
+                        // ctx.fillStyle = `rgb(${val}, ${val}, ${val})`
+
+                        height = (height + 1) / 2
+
+                        if (height > 0.8) {
+                            ctx.fillStyle = luminance('#7A8781', height - 0.8)
+                        } else if (height > 0.7) {
+                            ctx.fillStyle = luminance('#59842A', height - 0.7)
+                        } else if (height > 0.6) {
+                            ctx.fillStyle = luminance('#4C7124', height - 0.65)
+                        } else if (height > 0.56) {
+                            ctx.fillStyle = luminance('#326800', height - 0.56)
+                            // ctx.fillStyle = luminance('#3D610A', height - 0.6);
+                        // } else if(height > 0.582){ // upper beach
+                            // ctx.fillStyle = luminance('#B58233', height - 0.582);
+                        // } else if(height > 0.56){ // beach
+                            // ctx.fillStyle = luminance('#DDCB75', height - 0.56);
+                        } else { // ocean
+                            ctx.fillStyle = luminance('#254e78', height)
+                        }
+
+                        ctx.fillRect(x * tileWidth, z * tileWidth, tileWidth, tileWidth)
+                        z += 1
+                        i += 1
+                    }
+                    z = 0
+                    x += 1
+                }
+            })
+        })
+
+        function luminance(hex, lum) {
+        	// validate hex string
+            hex = String(hex).replace(/[^0-9a-f]/gi, '')
+            if (hex.length < 6) {
+                hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2]
+            }
+            lum = lum || 0
+
+        	// convert to decimal and change luminosity
+            var rgb = '#'
+            var c
+            var i
+
+            for (i = 0; i < 3; i++) {
+                c = parseInt(hex.substr(i * 2, 2), 16)
+                c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16)
+                rgb += ('00' + c).substr(c.length)
+            }
+
+            return rgb
+        }
+    </script>
+</html>

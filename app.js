@@ -19,6 +19,10 @@ app.get('/', (req, res) => {
     ]})
 })
 
+app.get('/help', (req, res) => {
+    res.send('Available Actions:')
+})
+
 app.post('/signup', (req, res) => {
     let {username, password} = req.body
     if (username && password) {
@@ -67,13 +71,10 @@ app.post('/login', (req, res) => {
     }
 })
 
-app.get('/help', (req, res) => {
-    res.send('Available Actions:')
-})
-
 app.get('/units', (req, res) => {
-    if (req.query.token) {
-        let token = req.query.token
+    let token = req.header('token')
+
+    if (token) {
         jwt.verify(token, secretKey, (err, decoded) => {
             if (err) {
                 console.error(err.name)
@@ -82,7 +83,7 @@ app.get('/units', (req, res) => {
                 console.log(decoded)
                 let userId = decoded.uuid
 
-                Units.find(userId)
+                Units.getAll(userId)
                 .then(units => {
                     console.log(units)
                     res.send(units)
@@ -94,23 +95,33 @@ app.get('/units', (req, res) => {
             }
         })
     } else {
-        res.send('Requires authentication')
+        res.send('Auth token is required')
     }
 })
 
 app.get('/move-unit', (req, res) => {
     let {unitId, x, z} = req.query
-    if (unitId && x && z) {
-        Units.move(unitId, x, z)
-        .then(() => {
-            res.send('moving')
-        })
-        .catch(err => {
-            console.error(err)
-            res.send('error')
+    let token = req.header('token')
+
+    if (token) {
+        jwt.verify(token, secretKey, (err, decoded) => {
+            let userId = decoded.uuid
+
+            if (unitId && x && z) {
+                Units.move(userId, unitId, x, z)
+                .then(() => {
+                    res.send('moving')
+                })
+                .catch(err => {
+                    console.error(err)
+                    res.send('error')
+                })
+            } else {
+                res.send('Missing unit id, x, or z')
+            }
         })
     } else {
-        res.send('Missing unit id, x, or z')
+        res.send('Auth token is required')
     }
 })
 
