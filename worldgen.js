@@ -1,25 +1,15 @@
+// Fractional Brownian Motion function derived from combining Fast-simplex-noise library, and pseudocode from this Google Post
+// https://code.google.com/archive/p/fractalterraingeneration/wikis/Fractional_Brownian_Motion.wiki
+
 const OpenSimplex = require('open-simplex-noise').default
 let simplex = new OpenSimplex(Date.now())
 
-// for each pixel, get the value
-// total = 0.0f;
-// frequency = 1.0 * f / hgrid;
-// amplitude = gain;
-//
-// for (i = 0; i < octaves; ++i) {
-//     total += noise(x * frequency, y * frequency) * amplitude;
-//     frequency *= lacunarity;
-//     amplitude *= gain;
-// }
-
-// octaves: 12, frequency: 0.315, persistence: 0.5
-
 const fbmOpts = {
-    octaves: 8,
+    octaves: 12,
     amplitude: 1, // try using persistence
     frequency: 0.315,
     persistence: 0.5, // also called gain
-    lacunarity: 2,
+    lacunarity: 2, // 2 is standard
 }
 
 function fbm(x, z, {octaves, amplitude, frequency, persistence, lacunarity}) {
@@ -47,7 +37,7 @@ function genData() {
         while (z < diameter) {
             let scaledX = x / (diameter / 10)
             let scaledZ = z / (diameter / 10)
-            // map[i] = simplex.noise2D(scaledX, scaledZ)
+
             map[i] = fbm(scaledX, scaledZ, fbmOpts)
             z += 1
             i += 1

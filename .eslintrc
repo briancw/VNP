@@ -1,0 +1,9 @@
+{
+    "extends": "brian",
+    "rules": {
+        "semi": [
+            "error",
+            "never"
+        ]
+    }
+}

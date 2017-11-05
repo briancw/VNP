@@ -2,3 +2,4 @@ node_modules
 db_data
 map-data-tests
 mapdata
+client/public/dist/*
