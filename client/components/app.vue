@@ -26,7 +26,7 @@ export default {
     top: 0px;
     left: 0;
     bottom: 0;
-    width: 180px;
+    width: 80px;
     height: 100%;
     background-color: #2a2a2a;
     padding-top: 30px;
@@ -44,9 +44,9 @@ export default {
 
 .page {
     position: absolute;
-    left: 180px;
+    left: 80px;
     right: 0px;
-    padding-left: 20px;
-    padding-top: 20px;
+    padding-left: 10px;
+    padding-top: 10px;
 }
 </style>
