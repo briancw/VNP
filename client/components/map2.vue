@@ -2,105 +2,65 @@
     <div>
         <a href="#" @click.prevent="getMapData">Download and Render</a>
         <br />
+        <a href="#" @click.prevent="threeStuff">Run Three</a>
+        <br />
 
-        <canvas id="canvas" height="100"></canvas>
+        <canvas id="canvas"></canvas>
     </div>
 </template>
 
 <script>
 import axios from 'axios'
+import * as THREE from 'three'
 export default {
     mounted() {
         this.terrain_canvas = document.getElementById('canvas')
         this.ctx = this.terrain_canvas.getContext('2d')
 
         window.ctx = this.ctx
+        window.terrain_canvas = this.terrain_canvas
     },
     data() {
         return {
-            tileWidth: 1,
+            tileWidth: 3,
             i: 0,
         }
     },
     methods: {
+        threeStuff() {
+            this.initThree()
+            this.animate()
+        },
         getMapData() {
             axios.get('http://localhost:3005/world-data')
             .then(res => {
                 let mapData = res.data
-                this.diameter = Math.sqrt(mapData.length / 6)
-                // this.diameter = 100
                 this.mapData = mapData
 
                 console.log(this.mapData)
 
-                this.initCanvas()
                 this.drawMap()
             })
         },
-        initCanvas() {
-            let pageEl = document.getElementsByClassName('page')[0]
-            let pageStyles = window.getComputedStyle(pageEl)
-            let pageWidth = parseInt(pageStyles.width) - parseInt(pageStyles.paddingLeft)
-            let pageHeight = parseInt(pageStyles.height) - parseInt(pageStyles.paddingTop)
-
-            this.terrain_canvas.width = pageWidth
-            this.terrain_canvas.height = pageHeight
-        },
         drawMap() {
-            // let x = 0
-            // let y = 0
+            // let diameter = Math.sqrt(this.mapData.length)
+            let diameter = 100
 
-            // let i = 0
-            let hOffset = 0
-            let vOffset = 0
+            this.terrain_canvas.width = (diameter * this.tileWidth)
+            this.terrain_canvas.height = (diameter * 2 * this.tileWidth) // Heyo, no idea why this is like this
+            this.ctx.clearRect(0, 0, diameter, diameter)
 
-            // x,z
-            hOffset = this.diameter
-            this.itterateGrid(hOffset, vOffset)
-
-            // y,z
-            hOffset = 0
-            vOffset = this.diameter
-            this.itterateGrid(hOffset, vOffset)
-
-            // x,y
-            hOffset = this.diameter
-            vOffset = this.diameter
-            this.itterateGrid(hOffset, vOffset)
-
-            // y,z
-            hOffset = this.diameter * 2
-            vOffset = this.diameter
-            this.itterateGrid(hOffset, vOffset)
-
-            // x,y
-            hOffset = this.diameter * 3
-            vOffset = this.diameter
-            this.itterateGrid(hOffset, vOffset)
-
-            // x,z
-            hOffset = this.diameter
-            vOffset = this.diameter * 2
-            this.itterateGrid(hOffset, vOffset)
-        },
-        itterateGrid(hOffset, vOffset) {
-            let x = 0
-            let y = 0
-            while (y < this.diameter) {
-                while (x < this.diameter) {
-                    let height = this.mapData[this.i]
-
-                    this.drawTile(height, x, y, hOffset, vOffset)
-
-                    x += 1
-                    this.i += 1
+            let i = 0
+            for (let y = 0; y < diameter * 2; y += 1) {
+                for (let x = 0; x < diameter; x += 1) {
+                    let height = this.mapData[i]
+                    this.drawTile(height, x, y)
+                    i += 1
                 }
-                x = 0
-                y += 1
             }
         },
         drawTile(height, x, z, hOffset = 0, vOffset = 0) {
-            height = (height + 1) / 2
+            // height = (height + 1) / 2
 
             if (height > 0.8) {
                 this.ctx.fillStyle = this.luminance('#7A8781', height - 0.8)
@@ -140,6 +100,35 @@ export default {
             }
 
             return rgb
+        },
+        initThree() {
+            this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10)
+            this.camera.position.z = 1
+
+            this.scene = new THREE.Scene()
+
+            let geometry = new THREE.SphereGeometry(0.5, 32, 32)
+            // let geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2)
+
+            let texture = new THREE.TextureLoader().load('/surface.png')
+
+            let material = new THREE.MeshBasicMaterial({map: texture, overdraw: 0.5})
+            // let material = new THREE.MeshNormalMaterial()
+
+            this.mesh = new THREE.Mesh(geometry, material)
+            this.scene.add(this.mesh)
+
+            this.renderer = new THREE.WebGLRenderer({ antialias: true })
+            this.renderer.setSize(window.innerWidth, window.innerHeight)
+            document.body.appendChild(this.renderer.domElement)
+        },
+        animate() {
+            requestAnimationFrame(this.animate)
+
+            this.mesh.rotation.y += 0.02 // around west to east
+            this.mesh.rotation.x -= 0.001
+
+            this.renderer.render(this.scene, this.camera)
         },
     },
 }

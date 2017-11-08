@@ -14,10 +14,16 @@ function loadPage(templateName) {
 
 const index = loadPage('index')
 const map = loadPage('map')
+const map2 = loadPage('map2')
+const canvasTests = loadPage('canvas')
+const threeTests = loadPage('three')
 
 const routes = [
     {path: '/', component: index, meta: {title: 'Welcome'}},
     {path: '/map', component: map, meta: {title: 'Welcome'}},
+    {path: '/map2', component: map2, meta: {title: 'Welcome'}},
+    {path: '/canvas', component: canvasTests, meta: {title: 'Welcome'}},
+    {path: '/three', component: threeTests, meta: {title: 'Welcome'}},
 ]
 
 let router = new Router({

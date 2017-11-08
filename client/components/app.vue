@@ -3,6 +3,9 @@
         <div class="menu">
             <router-link to="/" class="menu_link">Index</router-link>
             <router-link to="/map" class="menu_link">Map</router-link>
+            <router-link to="/map2" class="menu_link">Map2</router-link>
+            <router-link to="/canvas" class="menu_link">Canvas Tests</router-link>
+            <router-link to="/three" class="menu_link">Three Tests</router-link>
         </div>
         <div class="page">
             <router-view></router-view>
@@ -37,8 +40,9 @@ export default {
         display: block;
         text-decoration: none;
         color: rgba(255,255,255,.75);
-        padding-left: 10px;
-        height: 25px;
+        // padding-left: 10px;
+        // height: 25px;
+        padding: 5px 0px 5px 10px;
     }
 }
 
@@ -46,6 +50,8 @@ export default {
     position: absolute;
     left: 80px;
     right: 0px;
+    top: 0px;
+    bottom: 0px;
     padding-left: 10px;
     padding-top: 10px;
 }
