@@ -1,8 +1,5 @@
 <template>
     <div>
-        <!-- <a href="#" @click.prevent="getMapData">Download and Render</a>
-        <br /> -->
-
         <a href="#" @click.prevent="go">Render</a>
         <br />
 
@@ -33,10 +30,10 @@ export default {
 
             let points = []
 
-            for (let y = 0; y < circumference; y += 1) {
+            for (let y = 0; y < circumference / 2; y += 1) {
                 for (let x = 0; x < circumference; x += 1) {
                     // let latLng = this.flatToLatlngMercator(x, y, radius)
-                    let latLng = this.flatToLatlngEqui(x, y, circumference, circumference)
+                    let latLng = this.flatToLatlngEqui(x, y, circumference, circumference / 2)
                     // points.push(latLng)
                     let cart = this.latlngToCarteisan(latLng, radius)
                     let [cartX, cartY, cartZ] = cart
@@ -45,7 +42,7 @@ export default {
                     cartY += 20
                     cartZ += 20
 
-                    this.ctx.fillRect(cartX * this.tileWidth, cartY * this.tileWidth, 1, 1)
+                    this.ctx.fillRect(cartX * this.tileWidth, cartZ * this.tileWidth, 1, 1)
                     // points.push(cart)
                 }
             }
@@ -53,26 +50,26 @@ export default {
             console.log(points)
         },
         flatToLatlngEqui(x, y, mapWidth, mapHeight) {
-            let lon = (x * 360) / (mapWidth) - 180
-            let lat = (y * 180) / (mapHeight) - 90
+            let lon = ((x * 360) / (mapWidth)) - 180
+            let lat = ((y * 180) / (mapHeight)) - 90
             // Convert degrees to radians
             lon *= (Math.PI / 180)
             lat *= (Math.PI / 180)
 
             return [lat, lon]
         },
-        flatToLatlngMercator(x, y, radius) {
-            // This appears to be legit Mercator.
-            // The north pole is 85.051128 degrees which has something to do with the wiki about mercator converging
-            let lon = x / radius
-            let lat = (2 * Math.atan(Math.exp(y / radius))) - (Math.PI / 2)
-
-            // console.log(lat * (180 / Math.PI), lon * (180 / Math.PI))
-
-            return [lat, lon]
-            // returns Radians
-            // Need to do result * (180 / Math.PI) in order to see in degrees
-        },
+        // flatToLatlngMercator(x, y, radius) {
+        //     // This appears to be legit Mercator.
+        //     // The north pole is 85.051128 degrees which has something to do with the wiki about mercator converging
+        //     let lon = x / radius
+        //     let lat = (2 * Math.atan(Math.exp(y / radius))) - (Math.PI / 2)
+        //
+        //     // console.log(lat * (180 / Math.PI), lon * (180 / Math.PI))
+        //
+        //     return [lat, lon]
+        //     // returns Radians
+        //     // Need to do result * (180 / Math.PI) in order to see in degrees
+        // },
         // flatToLatlngAzi(x, y, radius) {
         //     let mapWidth = 100
         //     // I think this is Azithmul equidistant projection, but I'm not sure yet
