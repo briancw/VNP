@@ -3,9 +3,7 @@
         <div class="menu">
             <router-link to="/" class="menu_link">Index</router-link>
             <router-link to="/map" class="menu_link">Map</router-link>
-            <router-link to="/map2" class="menu_link">Map2</router-link>
             <router-link to="/canvas" class="menu_link">Canvas Tests</router-link>
-            <router-link to="/three" class="menu_link">Three Tests</router-link>
         </div>
         <div class="page">
             <router-view></router-view>

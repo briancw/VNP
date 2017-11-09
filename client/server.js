@@ -2,7 +2,7 @@ const express = require('express')
 const path = require('path')
 const history = require('connect-history-api-fallback')
 
-const {genData} = require('../worldgen.js')
+const {genData, setSeed} = require('../worldgen.js')
 
 const app = express()
 app.use(history({index: '/'}))
@@ -15,7 +15,12 @@ app.get('/', (req, res) => {
 })
 
 app.get('/world-data', (req, res) => {
-    let map = genData()
+    let {startX, startY, endX, endY, resolution, seed} = req.query
+    if (seed) {
+        setSeed(seed)
+    }
+
+    let map = genData(startX, startY, endX, endY, resolution)
     res.send(map)
 })
 
