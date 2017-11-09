@@ -12,6 +12,7 @@
 <script>
 import axios from 'axios'
 import * as THREE from 'three'
+const OrbitControls = require('three-orbit-controls')(THREE)
 export default {
     mounted() {
         this.terrain_canvas = document.getElementById('canvas')
@@ -22,8 +23,8 @@ export default {
     },
     data() {
         return {
-            tileWidth: 3,
-            i: 0,
+            tileWidth: 1,
+            circumference: 1024,
         }
     },
     methods: {
@@ -37,31 +38,28 @@ export default {
                 let mapData = res.data
                 this.mapData = mapData
 
-                console.log(this.mapData)
+                // console.log(this.mapData)
 
                 this.drawMap()
             })
         },
         drawMap() {
             // let diameter = Math.sqrt(this.mapData.length)
-            let diameter = 100
 
-            this.terrain_canvas.width = (diameter * this.tileWidth)
-            this.terrain_canvas.height = (diameter * 2 * this.tileWidth) // Heyo, no idea why this is like this
-            this.ctx.clearRect(0, 0, diameter, diameter)
+            this.terrain_canvas.width = (this.circumference * this.tileWidth)
+            this.terrain_canvas.height = (this.circumference * this.tileWidth / 2)
+            this.ctx.clearRect(0, 0, this.circumference, this.circumference)
 
             let i = 0
-            for (let y = 0; y < diameter * 2; y += 1) {
-                for (let x = 0; x < diameter; x += 1) {
+            for (let y = 0; y < this.circumference / 2; y += 1) {
+                for (let x = 0; x < this.circumference; x += 1) {
                     let height = this.mapData[i]
                     this.drawTile(height, x, y)
                     i += 1
                 }
             }
         },
-        drawTile(height, x, z, hOffset = 0, vOffset = 0) {
-            // height = (height + 1) / 2
-
+        drawTile(height, x, y) {
             if (height > 0.8) {
                 this.ctx.fillStyle = this.luminance('#7A8781', height - 0.8)
             } else if (height > 0.7) {
@@ -78,7 +76,7 @@ export default {
                 this.ctx.fillStyle = this.luminance('#254e78', height)
             }
 
-            this.ctx.fillRect((x + hOffset) * this.tileWidth, (z + vOffset) * this.tileWidth, this.tileWidth, this.tileWidth)
+            this.ctx.fillRect(x * this.tileWidth, y * this.tileWidth, this.tileWidth, this.tileWidth)
         },
         luminance(hex, lum) {
         	// validate hex string
@@ -105,6 +103,8 @@ export default {
             this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10)
             this.camera.position.z = 1
 
+            let controls = new OrbitControls(this.camera)
+
             this.scene = new THREE.Scene()
 
             let geometry = new THREE.SphereGeometry(0.5, 32, 32)
@@ -124,9 +124,6 @@ export default {
         },
         animate() {
             requestAnimationFrame(this.animate)
-
-            this.mesh.rotation.y += 0.02 // around west to east
-            this.mesh.rotation.x -= 0.001
 
             this.renderer.render(this.scene, this.camera)
         },
